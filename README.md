@@ -12,7 +12,7 @@
 - 负责团队建模工具的开发和维护。
 
 ## 代码索引
-### 常规工具
+### 通用工具
 包含日常工作中使用的工具函数，例如自动编辑excel、发邮件、与mysql、hive交互等。
 - **autoexcel**：自动编辑excel，支持将DataFrame和图片插入excel
 - **general_tools**：一些日常使用的小工具
