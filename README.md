@@ -35,7 +35,7 @@
 
 ### 算法研究
 实现论文中的算法
-- **tradaboost**：TradaBoost算法，相关论文《Boosting for transfer learning》
+- **tradaboost**：TradaBoost迁移学习算法，相关论文《Boosting for transfer learning》
 - **ftrl**：谷歌的FTRL在线学习算法，相关论文《Ad Click Prediction- a View from the Trenches》
 - **gbdt**：梯度提升树算法，相关论文《Greedy function approximation: A gradient boosting machine》
 
