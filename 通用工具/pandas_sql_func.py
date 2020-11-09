@@ -2,7 +2,7 @@
 # Author: Jingcheng Qiu
 
 """
-在DataFrame上实现一些hive函数相同的功能
+在DataFrame上实现一些SQL函数的功能
 """
 
 import pandas as pd
