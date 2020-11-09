@@ -1,7 +1,7 @@
 # coding: utf-8
 
 """
-用于matlibplot绘图显示中文字符
+用于matlibplot绘图显示中文字符, 需要代码路径下存在中文字体文件'simsun.ttc'
 """
 
 
