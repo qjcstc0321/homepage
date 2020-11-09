@@ -28,7 +28,6 @@
 - **data_overview**：数据探索性分析工具包
 - **int_encoder**：正整数编码工具
 - **preprocess**： 数据预处理工具包
-- **woe_tools**：变量WOE计算工具包
 - **model_building**：建模工具包
 - **model_validation**： 模型效果验证工具包
 - **model_monitor**：模型监控工具包
