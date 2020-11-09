@@ -14,9 +14,6 @@ from pandas import read_csv, concat
 from pyarrow.parquet import read_table
 
 
-hdfs_conn = hdfs.InsecureClient('http://10.9.8.120:14000', user='hive')    # 默认连接方式
-
-
 class Threading(Thread):
     """
     多线程执行函数，并保存函数的返回值
@@ -55,7 +52,7 @@ class HdfsReader(object):
     """
     从HDFS上下载文件再读取成DataFrame
     """
-    def __init__(self, hdfs_client=hdfs_conn, impala_client=None):
+    def __init__(self, hdfs_client, impala_client=None):
         """
         Parameters
         ----------
@@ -65,37 +62,19 @@ class HdfsReader(object):
             impala代理, 若不知道HDFS文件的具体路径，需指定该参数，以获取表文件存放的HDFS路径
         """
         self.client = hdfs_client
-        self.conn = impala_client
 
-    def __get_hdfs_path(self, table_name):
-        """
-        通过表名获取底层数据文件存放的HDFS路径
-        """
-        if self.conn is None:
-            raise ValueError('No impala client available')
-        cursor = self.conn.cursor()
-        cursor.execute('show table stats %s' % (table_name))
-        hdfs_path = cursor.fetchall()[0][-1]
-        cursor.close()
-
-        return hdfs_path
-
-    def download_file_from_hdfs(self, table_name, hdfs_path=None, save_path=None):
+    def download_file_from_hdfs(self, hdfs_path, save_path=None):
         """
         从HDFS中下载文件
         Parameters
         ----------
-        table_name: str, 表名
-        hdfs_path: str, default None
-            HDFS路径，如果不是分区表，可只填表名
+        hdfs_path: str,
+            HDFS路径
         save_path: str, default None
-            文件在本地存放的路径，若不填则会在当前工作目录下建一个跟table_name相同的文件夹存放文件
+            文件在本地存放的路径，若不填则会在当前工作目录下创建一个hdfs_files的文件夹存放文件
         """
-        if hdfs_path is None:
-            hdfs_path = self.__get_hdfs_path(table_name)
-            hdfs_path = hdfs_path[12:]
         if save_path is None:
-            save_path = os.path.join(os.getcwd(), table_name)    # 存放parquet文件的临时目录
+            save_path = os.path.join(os.getcwd(), 'hdfs_files')    # 存放parquet文件的临时目录
 
         # 建立存放文件的文件夹，若文件夹已存在则清空其中的文件
         if not os.path.exists(save_path):
@@ -120,12 +99,12 @@ class HdfsReader(object):
         return 'Download completed'
 
     @staticmethod
-    def read_table_from_file(save_path, file_type='parquet', columns=None):
+    def read_table_from_file(file_path, file_type='parquet', columns=None):
         """
         读取文件生成DataFrame
         Parameters
         ----------
-        save_path: str
+        file_path: str
             文件在本地存放的路径
         file_type: str, default 'parquet', options ['parquet', 'textfile']
             文件的格式
@@ -138,11 +117,11 @@ class HdfsReader(object):
         """
         # 读取文件并转成DataFrame
         if file_type == 'parquet':
-            df = read_table(save_path, use_legacy_dataset=True).to_pandas()
+            df = read_table(file_path, use_legacy_dataset=True).to_pandas()
         elif file_type == 'textfile':
             threads = []
-            for f in os.listdir(save_path):
-                args = {'filepath_or_buffer': os.path.join(save_path, f),
+            for f in os.listdir(file_path):
+                args = {'filepath_or_buffer': os.path.join(file_path, f),
                         'sep': '\001',
                         'header': None,
                         'names': columns,
